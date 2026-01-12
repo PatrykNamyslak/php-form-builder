@@ -1,7 +1,7 @@
 Here is what a DESCRIBE query returns:
 
 Field => The name of the column
-Type => The data type the column expects
-Null => Is it nullable
+Type => The data type the column expects + sometimes the length or values concatinated along with it i.e varchar(255) or enum('1','2','3')
+Null => Is the column nullable
 Key => Key type, i.e Primary key, Unique key etc.
 Default => The default value for the column

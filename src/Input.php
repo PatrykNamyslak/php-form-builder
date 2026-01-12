@@ -12,7 +12,7 @@ class Input{
     private string $name;
     private ?string $defaultValue = null;
     private int $maxLength = 255;
-    private ?array $values = null;
+    private ?array $defaultValues = null;
     private bool $acceptMultipleValues = false;
     private bool $required = false;
 
@@ -20,26 +20,30 @@ class Input{
 
 
     // Chainable methods
-    public function default(string|null $value){
+    public function default(string|null $value): static{
         $this->defaultValue = $value;
         return $this;
     }
-    public function dataTypeExpectedByDatabase(string $value){
+    public function dataTypeExpectedByDatabase(string $value): static{
         $this->dataTypeExpectedByDatabase = $value;
         return $this;
     }
     /**
-     * Summary of values
+     * Set the default values from a string
      * @param string $stringifiedValues This is usually mixed in with the type part of a columns structure i.e enum('1','2','3','4')
      */
-    public function values(string $stringifiedValues){
-        $charactersToTrim = ["enum", "set", "(", ")", "'"];
-        $enumValues = "";
-        foreach($charactersToTrim as $char){
-            $enumValues = trim($stringifiedValues, $char);
+    public function values(string $stringifiedValues): static{
+        // Find where the values start
+        $openingBracket = strpos(haystack: $stringifiedValues, needle: "(");
+        $defaultValues = substr(string: $stringifiedValues, offset: $openingBracket);
+        $defaultValues = trim(string: $defaultValues, characters: "()");
+        $defaultValues = explode(separator: ",", string: $defaultValues);
+
+        // Remove single quotes
+        foreach($defaultValues as &$value){
+            $value = trim($value, "'");
         }
-        $enumValues = explode(",", $enumValues);
-        $this->values = $enumValues;
+        $this->defaultValues = $defaultValues;
         return $this;
     }
 
@@ -102,8 +106,6 @@ class Input{
     }
 
     // Non chainable methods, these must be at the end of the chain!
-
-
     /**
      * Renders the label
      * @return static
@@ -125,15 +127,26 @@ class Input{
         <textarea 
         name="<?= $this->name ?>" 
         <?= $this->renderRequiredAttribute() ?> 
-        maxlength="<?= $this->maxLength ?>"
-        >
-        <?= $this->defaultValue ?>
-        </textarea>
+        maxlength="<?= $this->maxLength ?>" 
+        value="<?= $this->defaultValue ?>"
+        ></textarea>
         <?php
     }
 
     public function dropdown(){
-        
+        ?>
+        <select name="<?= $this->name ?>" 
+        <?php $this->renderRequiredAttribute(); ?>
+        >
+        <?php
+        foreach($this->defaultValues as $defaultValue):
+            ?>
+            <option value="<?= $defaultValue ?>"><?= $this->prettyPrint($defaultValue) ?></option>
+            <?php
+        endforeach;
+        ?>
+        </select>
+        <?php
     }
 
     public function textField(){
@@ -166,5 +179,10 @@ class Input{
 
     public function getTypeInString(){
         return $this->typeInString;
+    }
+
+    public function prettyPrint(string $text){
+        $text = str_replace("_", " ", $text);
+        return ucwords($text);
     }
 }

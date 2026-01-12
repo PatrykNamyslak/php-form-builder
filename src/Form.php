@@ -34,10 +34,10 @@ class Form{
     /**
      * Sets where the form should send data.
      * @param string $destination URI or URL
-     * @return void
      */
     public function action(string $destination){
         $this->action = $destination;
+        return $this;
     }
 
     public function method(RequestMethod|string $RequestMethod){
