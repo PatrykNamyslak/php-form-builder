@@ -1,4 +1,4 @@
-```
+```PHP
 // Here is a code snippet on how you can handle same page submissions
 match($_SERVER['REQUEST_METHOD']){
     "GET" => $form->render(),
