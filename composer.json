@@ -1,5 +1,5 @@
 {
-    "name": "patryknamyslak/php-form-builder",
+    "name": "patryknamyslak/patform",
     "description": "A form builder that fetches a tables structure and creates suitable fields, ideal for admin panels or to ease up the way of populating a table!",
     "type": "library",
     "autoload": {
