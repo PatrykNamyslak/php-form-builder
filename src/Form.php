@@ -117,6 +117,36 @@ class Form{
         return $this;
     }
 
+    /**
+     * You can use this to modify the tableStructure used by the generator, for example if you want to make a login form and you only need specific fields such as username and password but not userID.
+     * @param array $tableStructure
+     * @return static
+     */
+    // public function tableStructure(array $tableStructure){
+    //     $this->tableStructure = $tableStructure;
+    //     return $this;
+    // }
+    
+    public function omitFields(array $columnNames){
+        foreach($columnNames as $columnName){
+            unset($this->tableStructure[array_search($columnName, $this->tableStructure)]);
+        }
+        return $this;
+    }
+    /**
+     * Pass an array of columns that are in the target table that the form is being generated from to remove them from the final form, this can cause errors if the database does not have default values for these columns upon form submission or you don't handle form submission correctly by modifying the submit functionality.
+     * @return static
+     */
+    public function onlyUse(array $columns){
+        // Check if the columns are in the table structure
+        if (empty(array_diff($columns, $this->tableStructure))){
+            $this->tableStructure = $columns;
+        }else{
+            throw new Exception("Invalid column names provided.");
+        }
+        return $this;
+    }
+
 
     public function noCsrf(){
         $this->csrf = false;
