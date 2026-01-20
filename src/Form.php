@@ -33,7 +33,7 @@ class Form{
             $stmt = $databaseConnection->connection->query($query);
             $stmt->setFetchMode(\PDO::FETCH_OBJ);
             $this->tableStructure = $stmt->fetchAll();
-            $this->fieldNames = array_column($this->tableStructure, column_key: ColumnInfo::NAME->value);
+            $this->fieldNames = array_column($this->tableStructure, column_key: ColumnProperty::NAME->value);
             return;
         }catch(Exception $e){
             echo "Form Builder Failed \n\n";
@@ -146,7 +146,7 @@ class Form{
         if ($columnNames === []){
             throw new Exception('$columnNames Cannot be an empty array!');
         }
-        $currentlySetFieldNames = array_column($this->tableStructure, ColumnInfo::NAME->value);
+        $currentlySetFieldNames = array_column($this->tableStructure, ColumnProperty::NAME->value);
         // Check if the columns are in the table structure
         if (empty(array_diff($columnNames, $currentlySetFieldNames))){
             $newTableStructure = [];
@@ -158,7 +158,7 @@ class Form{
             throw new Exception("Invalid column names provided.: " . implode(separator: ",", array: array_diff($columnNames, $currentlySetFieldNames)));
         }
         $this->tableStructure = $newTableStructure;
-        $this->fieldNames(array_column($this->tableStructure, ColumnInfo::NAME->value));
+        $this->fieldNames(array_column($this->tableStructure, ColumnProperty::NAME->value));
         return $this;
     }
 
@@ -253,11 +253,11 @@ class Form{
             }
             $Input = new Input;
             $Input
-            ->dataTypeExpectedByDatabase($column->Type)
-            ->name($column->Field)
-            ->values($column->Type)
-            ->type($column->Type)
-            ->default($column->Default)
+            ->dataTypeExpectedByDatabase($column->{ColumnProperty::TYPE->value})
+            ->name($column->{ColumnProperty::NAME->value})
+            ->values($column->{ColumnProperty::TYPE->value})
+            ->type($column->{ColumnProperty::TYPE->value})
+            ->default($column->{ColumnProperty::DEFAULT->value})
             ->required(Column::isNullable($column) === false);
 
             // Render the input field
@@ -271,8 +271,8 @@ class Form{
                 $Input->json()->textField();
             }else{
                 match($Input->type){
-                    InputType::TEXT_AREA => $Input->textArea(),
                     InputType::TEXT => $Input->textField(),
+                    InputType::TEXT_AREA => $Input->textArea(),
                     InputType::DROPDOWN => $Input->dropdown(),
                     InputType::RADIO => $Input->radio(),
                 };
