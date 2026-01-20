@@ -90,7 +90,6 @@ class Form{
         }
     }
 
-
     /**
      * Sets where the form should send data.
      * @param string $destination URI or URL
@@ -118,32 +117,43 @@ class Form{
     }
 
     /**
-     * You can use this to modify the tableStructure used by the generator, for example if you want to make a login form and you only need specific fields such as username and password but not userID.
-     * @param array $tableStructure
+     * Pass an array of column names that are in the target table that the form is being generated from to remove them from the final form, this can cause errors if the database does not have default values for these columns upon form submission or you don't handle form submission correctly by modifying the submit functionality.
      * @return static
      */
-    // public function tableStructure(array $tableStructure){
-    //     $this->tableStructure = $tableStructure;
-    //     return $this;
-    // }
-    
     public function omitFields(array $columnNames){
+        $ts = &$this->tableStructure;
+        $currentlySetFieldNames = array_column($ts, "Name");
         foreach($columnNames as $columnName){
-            unset($this->tableStructure[array_search($columnName, $this->tableStructure)]);
+            $key = array_search($columnName, $currentlySetFieldNames);
+            if ($key !== false){
+                unset($ts[$key]);
+            }
         }
         return $this;
     }
+
     /**
-     * Pass an array of columns that are in the target table that the form is being generated from to remove them from the final form, this can cause errors if the database does not have default values for these columns upon form submission or you don't handle form submission correctly by modifying the submit functionality.
+     * Only uses the fields provided - Be warned that upon form submission there could be an error if the database doesnt have a default value for the omitted columns
+     * @param array $columnNames
+     * @throws Exception
      * @return static
      */
-    public function onlyUse(array $columns){
-        // Check if the columns are in the table structure
-        if (empty(array_diff($columns, $this->tableStructure))){
-            $this->tableStructure = $columns;
-        }else{
-            throw new Exception("Invalid column names provided.");
+    public function onlyUse(array $columnNames){
+        if ($columnNames === []){
+            throw new Exception('$columnNames Cannot be an empty array!');
         }
+        $currentlySetFieldNames = array_column($this->tableStructure, "Name");
+        // Check if the columns are in the table structure
+        if (empty(array_diff($columnNames, $currentlySetFieldNames))){
+            $newTableStructure = [];
+            foreach($columnNames as $columnName){
+                $position = array_search($columnName, $currentlySetFieldNames);
+                $newTableStructure[] = $this->tableStructure[$position];
+            }
+        }else{
+            throw new Exception("Invalid column names provided.: " . implode(separator: ",", array: array_diff($columnNames, $currentlySetFieldNames)));
+        }
+        $this->tableStructure = $newTableStructure;
         return $this;
     }
 
