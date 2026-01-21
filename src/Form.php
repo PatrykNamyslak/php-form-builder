@@ -66,6 +66,9 @@ class Form{
     }
 
     
+
+    protected function beforeSubmit(array $formData){}
+    protected function afterSubmit(array $formData){}
     /**
      * Default form submission
      * @param array $formData
@@ -112,6 +115,7 @@ class Form{
 
 
     public function method(RequestMethod|string $RequestMethod){
+        $RequestMethod = strtoupper($RequestMethod);
         if (is_string($RequestMethod) and !in_array($RequestMethod, array_column(RequestMethod::cases(), "value"))){
             throw new Exception("The RequestMethod was not set as the value provided is invalid");
         }
