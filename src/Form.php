@@ -190,13 +190,13 @@ class Form{
      * Returns the currently set CSRF token and if there is none set, it sets it, then returns it.
      * @return string
      */
-    private function csrfToken(){
+    public function csrfToken(){
         if (!$_SESSION["csrf_token"]){
             $this->setCSRFToken();
         }
         return $_SESSION["csrf_token"];
     }
-    private function validateCsrfToken(string $token){
+    public function validateCsrfToken(string $token){
         return $token === $this->csrfToken();
     }
 
