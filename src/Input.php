@@ -152,9 +152,11 @@ class Input{
         <?php
     }
 
-    public function passwordField(){
+    public function passwordField(?string $placeholder){
+        $placeholder = $this->createInputPlaceholder($placeholder);
         ?>
         <input type="password" name="<?= $this->name ?>" 
+        placeholder="<?= $placeholder ?>" 
         <?php
         $this->renderRequiredAttribute();
         ?>
