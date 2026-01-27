@@ -19,4 +19,6 @@ enum InputType:int{
     case DATE = 5;
     // Boolean columns
     case RADIO = 6;
+    case PASSWORD = 7;
+
 }

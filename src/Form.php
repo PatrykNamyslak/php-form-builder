@@ -285,6 +285,7 @@ class Form{
             }else{
                 match($Input->type){
                     InputType::TEXT => $Input->textField(),
+                    InputType::PASSWORD => $Input->passwordField(),
                     InputType::TEXT_AREA => $Input->textArea(),
                     InputType::DROPDOWN => $Input->dropdown(),
                     InputType::RADIO => $Input->radio(),

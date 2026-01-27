@@ -101,6 +101,9 @@ class Input{
         if (($this->columnTypeInString === "enum") and (count($this->defaultValues) === 2)){
             $this->type = InputType::RADIO;
         }else{
+            if (str_contains($this->name, "password")){
+                $this->type = InputType::PASSWORD;
+            }
             $this->type = match($type){
                 "int", "smallint", "mediumint", "bigint" => InputType::NUMBER,
                 "varchar", "json" => InputType::TEXT,
@@ -144,6 +147,16 @@ class Input{
         maxlength="<?= $this->maxLength ?>" 
         value="<?= $this->defaultValue ?>"
         ></textarea>
+        <?php
+    }
+
+    public function passwordField(){
+        ?>
+        <input type="password" name="<?= $this->name ?>" 
+        <?php
+        $this->renderRequiredAttribute();
+        ?>
+        >
         <?php
     }
 
